@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片转base64</title>
+  <link rel="stylesheet" href="//unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+  <script src="//cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+  <script src="//unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+  <style>
+    body {
+      padding: 50px;
+    }
+    .code {
+      word-break: break-all;
+    }
+    .copyInput {
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="indexSPA">
+    <h3>选择图片：</h3>
+    <el-upload
+      action="1"
+      accept="image/*"
+      :http-request="doUpload"
+      :on-change="doTransfer"
+      :on-remove="handleRemove"
+      list-type="picture-card"
+      :limit="1"
+      :file-list="files">
+      <i class="el-icon-plus"></i>
+    </el-upload>
+    <h3>base64：<el-button @click="doCopy">复制</el-button></h3>
+    <p class="code"  ref="copy">{{code}}</p>
+    <!-- <input type="text" ref="copyInput" v-model="code" class="copyInput" readonly> -->
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#indexSPA',
+      data: {
+        files: [],
+        code: '', //base64数据
+      },
+      methods: {
+        doTransfer: function(file, fileList) {
+          var that = this;
+          console.log(file,fileList)
+          var fileReader = new FileReader();
+          fileReader.onload = function(e) {
+            that.code = e.target.result;
+            console.log('result',this.result)
+          };
+          fileReader.readAsDataURL(file.raw);
+        },
+        handleRemove: function() {
+          this.code = '';
+        },
+        doUpload: function() {
+
+        },
+        doCopy: function() {
+          const range = document.createRange(); 
+          range.selectNode(this.$refs.copy); 
+          const selection = window.getSelection(); 
+          if(selection.rangeCount > 0) selection.removeAllRanges(); 
+          selection.addRange(range); 
+          if(document.execCommand('Copy')){
+            this.$message.success('链接复制成功');
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
